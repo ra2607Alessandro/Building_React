@@ -41,8 +41,20 @@ function createDOM(fiber) {
     container.appendChild(dom)
  }
 
+function commitRoot() {
+
+}
+
 
 function render(element, container ) {
+    const wipRoot = {
+        dom: container,
+        props: {
+            children: [element],
+        },
+    }
+
+    nextUnitOfWork= wipRoot
 
     const dom = 
     element.type == "TEXT_ELEMENT"
@@ -59,6 +71,7 @@ function render(element, container ) {
     return dom 
  }
 let nextUnitOfWork = null
+let wipRoot = null 
 
 function workLoop(deadline) {
     let shouldYield = false
@@ -66,6 +79,10 @@ function workLoop(deadline) {
         nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
         shouldYield = deadline.timeRemaining() < 1
 
+    }
+     
+    if (!nextUnitOfWork && wipRoot) {
+        commitRoot()
     }
     requestIdCallback(workLoop)
 }
